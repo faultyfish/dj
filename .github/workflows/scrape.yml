@@ -12,42 +12,44 @@ jobs:
   scrape-and-deploy:
     name: Scrape → Filter → Store → Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 15      # kill runaway jobs
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: job_radar   # all run steps execute inside job_radar/
 
     steps:
-      # ---------------------------------------------------------------
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # ---------------------------------------------------------------
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
+          cache-dependency-path: job_radar/requirements.txt
 
-      # ---------------------------------------------------------------
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # ---------------------------------------------------------------
       - name: Run scraper + store to DB
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python run.py "Dublin, Ireland"
 
-      # ---------------------------------------------------------------
       - name: Generate static dashboard HTML
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python generate_dashboard.py
 
-      # ---------------------------------------------------------------
+      - name: Add .nojekyll to skip Jekyll build
+        run: touch docs/.nojekyll
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs          # generated HTML goes here
+          publish_dir: ./job_radar/docs
           publish_branch: gh-pages
           commit_message: "Dashboard updated: ${{ github.run_id }}"
-          force_orphan: false          # keep gh-pages history
+          force_orphan: false
