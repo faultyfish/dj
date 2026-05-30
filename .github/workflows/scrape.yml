@@ -23,10 +23,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    defaults:
-      run:
-        working-directory: job_radar
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -36,7 +32,7 @@ jobs:
         with:
           python-version: "3.11"
           cache: "pip"
-          cache-dependency-path: job_radar/requirements.txt
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -66,7 +62,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: job_radar/docs
+          path: docs
 
       - name: Deploy to GitHub Pages
         id: deployment
