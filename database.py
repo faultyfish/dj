@@ -100,3 +100,47 @@ def init_db(engine):
     """Create all tables if they don't exist."""
     Base.metadata.create_all(engine)
     logger.info("Database tables initialised")
+
+
+def migrate_db(engine):
+    """
+    Safely add any missing columns to an existing jobs table.
+    Uses ADD COLUMN IF NOT EXISTS — safe to run on every startup.
+    Handles old tables from previous versions of this project.
+    """
+    migrations = [
+        "ALTER TABLE jobs ADD COLUMN IF NOT EXISTS job_type   VARCHAR(100) DEFAULT ''",
+        "ALTER TABLE jobs ADD COLUMN IF NOT EXISTS salary     VARCHAR(255) DEFAULT ''",
+        "ALTER TABLE jobs ADD COLUMN IF NOT EXISTS score      INTEGER      DEFAULT 0",
+        "ALTER TABLE jobs ADD COLUMN IF NOT EXISTS fingerprint VARCHAR(512) DEFAULT ''",
+        "ALTER TABLE jobs ADD COLUMN IF NOT EXISTS scraped_at  TIMESTAMPTZ  DEFAULT NOW()",
+        "ALTER TABLE jobs ADD COLUMN IF NOT EXISTS date_posted TIMESTAMPTZ",
+    ]
+
+    with engine.begin() as conn:
+        for sql in migrations:
+            try:
+                conn.execute(text(sql))
+            except Exception as e:
+                logger.warning("Migration skipped (%s): %s", sql[:60], e)
+
+        # Add unique constraint on fingerprint if not already present
+        # (won't fail if it already exists — caught and ignored)
+        try:
+            conn.execute(text(
+                "ALTER TABLE jobs ADD CONSTRAINT jobs_fingerprint_key UNIQUE (fingerprint)"
+            ))
+        except Exception:
+            pass  # constraint already exists
+
+        # Backfill fingerprint for old rows that have none
+        try:
+            conn.execute(text("""
+                UPDATE jobs
+                SET fingerprint = LOWER(TRIM(title)) || '|' || LOWER(TRIM(company))
+                WHERE fingerprint = '' OR fingerprint IS NULL
+            """))
+        except Exception as e:
+            logger.warning("Fingerprint backfill skipped: %s", e)
+
+    logger.info("Database migration complete")

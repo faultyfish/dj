@@ -4,7 +4,7 @@ import logging
 import sys
 from scraper import scrape
 from filters import filter_jobs, deduplicate
-from database import get_engine, get_session_factory, init_db
+from database import get_engine, get_session_factory, init_db, migrate_db
 from store import upsert_jobs, count_jobs
 
 logging.basicConfig(
@@ -33,6 +33,7 @@ def main():
     # 4. Store
     engine = get_engine()
     init_db(engine)
+    migrate_db(engine)
     SessionFactory = get_session_factory(engine)
 
     with SessionFactory() as session:
