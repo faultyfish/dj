@@ -14,10 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
-    defaults:
-      run:
-        working-directory: job_radar   # all run steps execute inside job_radar/
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
