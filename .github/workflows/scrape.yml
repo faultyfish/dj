@@ -1,4 +1,4 @@
-name: Job Radar — Scrape & Deploy
+name: Scrape & Deploy
 
 on:
   schedule:
