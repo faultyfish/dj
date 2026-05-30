@@ -2,17 +2,30 @@ name: Job Radar — Scrape & Deploy
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # every 6 hours: 00:00, 06:00, 12:00, 18:00 UTC
-  workflow_dispatch:         # allow manual trigger from GitHub UI
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
 
 permissions:
-  contents: write            # needed to push to gh-pages branch
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   scrape-and-deploy:
     name: Scrape → Filter → Store → Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    defaults:
+      run:
+        working-directory: job_radar
 
     steps:
       - name: Checkout repo
@@ -23,7 +36,7 @@ jobs:
         with:
           python-version: "3.11"
           cache: "pip"
-          cache-dependency-path: requirements.txt
+          cache-dependency-path: job_radar/requirements.txt
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -33,19 +46,28 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python run.py "Dublin, Ireland"
 
+      - name: Ensure docs directory exists
+        run: mkdir -p docs
+
       - name: Generate static dashboard HTML
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: python generate_dashboard.py
 
-      - name: Add .nojekyll to skip Jekyll build
+      - name: Add .nojekyll
         run: touch docs/.nojekyll
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Verify docs output
+        run: ls -la docs/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./job_radar/docs
-          publish_branch: gh-pages
-          commit_message: "Dashboard updated: ${{ github.run_id }}"
-          force_orphan: false
+          path: job_radar/docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
