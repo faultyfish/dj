@@ -28,7 +28,7 @@ def categorise(title: str) -> str:
     if any(k in t for k in ["retail", "shop assistant", "cashier", "sales assistant", "store"]):
         return "retail"
     if any(k in t for k in ["barista", "bar ", "waiter", "waitress", "chef", "cook",
-                              "hotel", "restaurant", "hospitality", "cafe", "café"]):
+                              "hotel", "restaurant", "hospitality", "cafe", "café","deli"]):
         return "hospitality"
     if any(k in t for k in ["warehouse", "picker", "packer", "forklift", "logistics", "stock"]):
         return "warehouse"
