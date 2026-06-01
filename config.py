@@ -2,7 +2,7 @@
 
 SCRAPER = {
     "locations": ["Dublin, Dublin 15, County Dublin"],
-    "sources": ["indeed", "linkedin","Glassdoor","ZipRecruiter"],
+    "sources": ["indeed", "linkedin"],
     "results_per_source": 50,
     "hours_old": 12,          # Only jobs posted in the last N hours
     "country": "Ireland",
@@ -27,7 +27,7 @@ ALLOW_RULES = [
                   "bar staff", "hotel", "restaurant", "kitchen",
                   "chef", "cook", "catering", "café", "cafe","deli"], "score": 15, "field": "title"},
     {"keywords": ["security", "security guard", "door supervisor",
-                  "concierge"],                                "score": 15, "field": "title"},
+                  "concierge"],                                "score": 35, "field": "title"},
     {"keywords": ["cleaner", "cleaning", "housekeeper",
                   "janitorial"],                               "score": 12, "field": "title"},
     {"keywords": ["driver", "delivery driver", "courier"],     "score": 12, "field": "title"},
