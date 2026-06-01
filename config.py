@@ -1,10 +1,10 @@
 # config.py — All tuneable settings in one place
 
 SCRAPER = {
-    "locations": ["Dublin, Ireland"],
+    "locations": ["Dublin, Dublin 15, County Dublin"],
     "sources": ["indeed", "linkedin"],
     "results_per_source": 50,
-    "hours_old": 24,          # Only jobs posted in the last N hours
+    "hours_old": 12,          # Only jobs posted in the last N hours
     "country": "Ireland",
 }
 
@@ -25,14 +25,14 @@ ALLOW_RULES = [
                   "logistics", "stock", "stores"],             "score": 15, "field": "title"},
     {"keywords": ["hospitality", "barista", "waiter", "waitress",
                   "bar staff", "hotel", "restaurant", "kitchen",
-                  "chef", "cook", "catering", "café", "cafe"], "score": 15, "field": "title"},
+                  "chef", "cook", "catering", "café", "cafe","deli"], "score": 15, "field": "title"},
     {"keywords": ["security", "security guard", "door supervisor",
                   "concierge"],                                "score": 15, "field": "title"},
     {"keywords": ["cleaner", "cleaning", "housekeeper",
                   "janitorial"],                               "score": 12, "field": "title"},
     {"keywords": ["driver", "delivery driver", "courier"],     "score": 12, "field": "title"},
     {"keywords": ["carer", "care assistant", "healthcare assistant",
-                  "support worker", "childcare"],              "score": 12, "field": "title"},
+                  "support worker", "childcare","research assistant"],              "score": 12, "field": "title"},
 
     # Entry-level signals in description
     {"keywords": ["no experience required", "no experience necessary",
