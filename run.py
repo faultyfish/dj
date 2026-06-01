@@ -23,7 +23,23 @@ def main():
     if not raw_jobs:
         logger.warning("No jobs returned from scraper. Exiting.")
         return
+    
+    # DEBUG — RAW SCRAPED JOBS
+    print(f"\n{'='*60}")
+    print("RAW SCRAPED JOBS")
+    print(f"{'='*60}\n")
 
+    for idx, job in enumerate(raw_jobs[:50], start=1):
+
+    print(f"{idx}. {job.title}")
+    print(f"   Company   : {job.company}")
+    print(f"   Location  : {job.location}")
+    print(f"   Source    : {job.source}")
+    print(f"   Type      : {job.job_type}")
+    print(f"   URL       : {job.job_url}")
+    print()
+
+    
     # 2. Deduplicate raw results
     unique_jobs = deduplicate(raw_jobs)
 
