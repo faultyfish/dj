@@ -2,7 +2,7 @@
 
 SCRAPER = {
     "locations": ["Dublin, Dublin 15, County Dublin"],
-    "sources": ["indeed", "linkedin"],
+    "sources": ["indeed", "linkedin","jods.ie"],
     "results_per_source": 50,
     "hours_old": 12,          # Only jobs posted in the last N hours
     "country": "Ireland",
