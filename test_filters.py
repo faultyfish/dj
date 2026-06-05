@@ -4,7 +4,7 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from models import Job
-from filters import score_job, filter_jobs, deduplicate
+from filters import score_job, filter_jobs, deduplicate, filter_dublin_only
 
 
 def make_job(**kwargs) -> Job:
@@ -75,7 +75,40 @@ def test_filter_jobs_splits_correctly():
 
 
 # ---------------------------------------------------------------------------
-# Dedup tests
+# Dublin location filter tests
+# ---------------------------------------------------------------------------
+
+def test_dublin_filter_keeps_dublin_postcodes():
+    jobs = [
+        make_job(location="Dublin 1"),
+        make_job(location="D2"),
+        make_job(location="Dublin 6W"),
+        make_job(location="Dun Laoghaire"),
+    ]
+    dublin = filter_dublin_only(jobs)
+    assert len(dublin) == 4
+
+def test_dublin_filter_removes_non_dublin():
+    jobs = [
+        make_job(location="Dublin 1"),
+        make_job(location="Cork"),
+        make_job(location="Limerick"),
+        make_job(location="Galway"),
+    ]
+    dublin = filter_dublin_only(jobs)
+    assert len(dublin) == 1
+    assert dublin[0].location == "Dublin 1"
+
+def test_dublin_filter_case_insensitive():
+    jobs = [
+        make_job(location="DUBLIN 5"),
+        make_job(location="dublin 7"),
+        make_job(location="Dublin 12"),
+    ]
+    dublin = filter_dublin_only(jobs)
+    assert len(dublin) == 3
+
+
 # ---------------------------------------------------------------------------
 
 def test_dedup_removes_exact_duplicates():

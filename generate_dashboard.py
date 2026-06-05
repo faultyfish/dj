@@ -14,21 +14,21 @@ from store import fetch_all_jobs
 OUTPUT_PATH = Path(__file__).parent / "docs" / "index.html"
 
 
+def is_dublin(location: str) -> bool:
+    """Check if job location is in Dublin."""
+    loc = location.lower()
+    dublin_keywords = ["dublin", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9",
+                       "d10", "d11", "d12", "d13", "d14", "d15", "d16", "d17", "d18",
+                       "d20", "d24", "dun laoghaire", "blackrock", "dalkey", "sandycove"]
+    return any(keyword in loc for keyword in dublin_keywords)
+
+
 def categorise(title: str) -> str:
     t = title.lower()
-    if any(k in t for k in ["tutor", "tutoring", "grinds", "teaching assistant",
-                              "research assistant", "lab assistant", "demonstrator"]):
-        return "academic"
-    if any(k in t for k in ["admin", "administrator", "receptionist", "office assistant",
-                              "data entry", "clerical", "coordinator", "library"]):
-        return "admin"
-    if any(k in t for k in ["customer service", "customer support", "call centre",
-                              "helpdesk", "help desk", "it support", "tech support"]):
-        return "support"
     if any(k in t for k in ["retail", "shop assistant", "cashier", "sales assistant", "store"]):
         return "retail"
     if any(k in t for k in ["barista", "bar ", "waiter", "waitress", "chef", "cook",
-                              "hotel", "restaurant", "hospitality", "cafe", "café","deli"]):
+                              "hotel", "restaurant", "hospitality", "cafe", "café"]):
         return "hospitality"
     if any(k in t for k in ["warehouse", "picker", "packer", "forklift", "logistics", "stock"]):
         return "warehouse"
@@ -40,13 +40,16 @@ def categorise(title: str) -> str:
 def jobs_to_json(jobs) -> str:
     records = []
     for j in jobs:
+        # Double-check: filter to Dublin only
+        if not is_dublin(j.location):
+            continue
         records.append({
             "title":       j.title,
             "company":     j.company,
             "location":    j.location,
             "source":      j.source,
             "job_type":    j.job_type,
-            "salary":      j.salary or "",
+            "salary":      j.salary or "Not listed",
             "score":       j.score,
             "date_posted": j.date_posted.isoformat() if j.date_posted else datetime.now(timezone.utc).isoformat(),
             "job_url":     j.job_url,

@@ -112,3 +112,17 @@ def fetch_all_jobs(session: Session, min_score: int = 10) -> List[Job]:
 
 def count_jobs(session: Session) -> int:
     return session.query(JobRecord).count()
+
+
+def cleanup_old_jobs(session: Session, days_old: int = 30) -> int:
+    """
+    Delete jobs older than N days (scraped_at cutoff).
+    Returns the count of deleted jobs.
+    """
+    from datetime import datetime, timedelta, timezone
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days_old)
+    count = session.query(JobRecord).filter(JobRecord.scraped_at < cutoff).delete()
+    session.commit()
+    if count:
+        logger.info("Cleanup: deleted %d jobs older than %d days", count, days_old)
+    return count

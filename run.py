@@ -3,9 +3,9 @@
 import logging
 import sys
 from scraper import scrape
-from filters import filter_jobs, deduplicate
+from filters import filter_jobs, deduplicate, filter_dublin_only
 from database import get_engine, get_session_factory, init_db, migrate_db
-from store import upsert_jobs, count_jobs
+from store import upsert_jobs, count_jobs, cleanup_old_jobs
 
 logging.basicConfig(
     level=logging.INFO,
@@ -43,8 +43,11 @@ def main():
     # 2. Deduplicate raw results
     unique_jobs = deduplicate(raw_jobs)
 
+    # 2b. Filter to Dublin only
+    dublin_jobs = filter_dublin_only(unique_jobs)
+
     # 3. Filter + score
-    kept, rejected = filter_jobs(unique_jobs)
+    kept, rejected = filter_jobs(dublin_jobs)
 
     # 4. Store
     engine = get_engine()
@@ -53,6 +56,9 @@ def main():
     SessionFactory = get_session_factory(engine)
 
     with SessionFactory() as session:
+        # Clean up old jobs (>30 days)
+        cleaned = cleanup_old_jobs(session, days_old=30)
+        # Upsert new jobs
         inserted, skipped = upsert_jobs(session, kept)
         total_in_db = count_jobs(session)
 
@@ -62,8 +68,10 @@ def main():
     print(f"{'='*60}")
     print(f"  Raw scraped   : {len(raw_jobs)}")
     print(f"  After dedup   : {len(unique_jobs)}")
+    print(f"  Dublin only   : {len(dublin_jobs)}")
     print(f"  Kept (pass)   : {len(kept)}")
     print(f"  Rejected      : {len(rejected)}")
+    print(f"  DB cleaned    : {cleaned}")
     print(f"  DB inserted   : {inserted}")
     print(f"  DB skipped    : {skipped}")
     print(f"  Total in DB   : {total_in_db}")

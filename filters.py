@@ -111,3 +111,31 @@ def deduplicate(jobs: List[Job]) -> List[Job]:
     if dupes:
         logger.info("Deduplicated %d duplicate jobs", dupes)
     return unique
+
+
+def filter_dublin_only(jobs: List[Job]) -> List[Job]:
+    """
+    Keep only jobs located in Dublin (case-insensitive).
+    Removes jobs from neighbouring counties or elsewhere.
+    """
+    dublin_keywords = ["dublin", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9",
+                       "d10", "d11", "d12", "d13", "d14", "d15", "d16", "d17", "d18",
+                       "d20", "d24", "dun laoghaire", "blackrock", "dalkey", "sandycove"]
+
+    dublin = []
+    non_dublin = []
+
+    for job in jobs:
+        loc = job.location.lower()
+        if any(keyword in loc for keyword in dublin_keywords):
+            dublin.append(job)
+        else:
+            non_dublin.append(job)
+
+    if non_dublin:
+        logger.info(
+            "Filtered out %d non-Dublin jobs (locations: %s)",
+            len(non_dublin),
+            ", ".join(set(j.location for j in non_dublin[:5]))
+        )
+    return dublin
