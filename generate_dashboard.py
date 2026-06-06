@@ -25,15 +25,36 @@ def is_dublin(location: str) -> bool:
 
 def categorise(title: str) -> str:
     t = title.lower()
-    if any(k in t for k in ["retail", "shop assistant", "cashier", "sales assistant", "store"]):
+    
+    # Academic/Research roles
+    if any(k in t for k in ["research assistant", "tutor", "lecturer", "professor", "academic"]):
+        return "academic"
+    
+    # Admin/Office roles (check before generic keywords to avoid overlap)
+    if any(k in t for k in ["receptionist", "secretary", "admin", "administrative", "office assistant", "office manager", "data entry"]):
+        return "admin"
+    
+    # Customer support/service roles
+    if any(k in t for k in ["customer service", "call centre", "call center", "support", "helpdesk", "help desk", "carer", "care assistant"]):
+        return "support"
+    
+    # Retail roles
+    if any(k in t for k in ["retail", "shop assistant", "cashier", "sales assistant", "store", "checkout"]):
         return "retail"
+    
+    # Hospitality roles
     if any(k in t for k in ["barista", "bar ", "waiter", "waitress", "chef", "cook",
-                              "hotel", "restaurant", "hospitality", "cafe", "café"]):
+                              "hotel", "restaurant", "hospitality", "cafe", "café", "deli", "kitchen"]):
         return "hospitality"
-    if any(k in t for k in ["warehouse", "picker", "packer", "forklift", "logistics", "stock"]):
+    
+    # Warehouse/Logistics roles
+    if any(k in t for k in ["warehouse", "picker", "packer", "forklift", "logistics", "stock", "delivery driver", "courier", "driver"]):
         return "warehouse"
-    if any(k in t for k in ["security", "guard", "door supervisor", "concierge"]):
+    
+    # Security roles (check last to avoid conflicts)
+    if any(k in t for k in ["security", "security guard", "guard", "door supervisor", "concierge"]):
         return "security"
+    
     return "other"
 
 
