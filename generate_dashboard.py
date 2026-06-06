@@ -24,6 +24,30 @@ def is_dublin(location: str) -> bool:
 def categorise(title: str) -> str:
     t = title.lower()
     
+    # Check security FIRST (highest priority - overrides other categories)
+    # Specific security types first
+    if any(k in t for k in ["security guard", "security officer", "armed security", "unarmed security",
+                             "door supervisor", "bouncer", "protective services", "protection officer",
+                             "event security", "retail security", "loss prevention", "asset protection",
+                             "corporate security", "building security", "site security", "warehouse security",
+                             "surveillance", "cctv", "control room", "access control",
+                             "nightclub security", "bar security", "venue security", "airport security",
+                             "aviation security", "vip security", "executive protection", "close protection",
+                             "bodyguard", "personal security", "private security", "night security",
+                             "armed response", "cash in transit", "armoured vehicle driver", "armored vehicle driver",
+                             "cash handler", "cash management",
+                             "g4s", "allied universal", "securitas", "horizon security", "eclipse security",
+                             "shield security", "guardian security", "centurion security", "capital security",
+                             "sector security", "loomis", "brinks"]):
+        return "security"
+    # Then broader security terms
+    if any(k in t for k in ["security patrol", "loss prevention officer", "risk assessment",
+                             "concierge", "patrol", "guarding", "protective", "protection"]):
+        return "security"
+    # Finally generic "security"
+    if "security" in t:
+        return "security"
+    
     # Academic/Research roles
     if any(k in t for k in ["research assistant", "tutor", "lecturer", "professor", "academic"]):
         return "academic"
@@ -43,7 +67,7 @@ def categorise(title: str) -> str:
     
     # Hospitality roles
     if any(k in t for k in ["barista", "bar ", "waiter", "waitress", "chef", "cook",
-                             "hotel", "restaurant", "hospitality", "cafe", "café", "deli", "kitchen"]):
+                             "hotel", "restaurant", "hospitality", "cafe", "café", "deli counter", "kitchen"]):
         return "hospitality"
     
     # Warehouse/Logistics/Driver roles
@@ -51,15 +75,9 @@ def categorise(title: str) -> str:
                              "delivery driver", "courier", "driver"]):
         return "warehouse"
     
-    # Security roles (check before generic 'security' keyword)
-    if any(k in t for k in ["security guard", "door supervisor", "concierge"]):
-        return "security"
-    if "security" in t:
-        return "security"
-    
     # Cleaning roles
     if any(k in t for k in ["cleaner", "cleaning", "housekeeper", "janitorial"]):
-        return "other"  # could create "cleaning" category or leave in "other"
+        return "other"
     
     return "other"
 

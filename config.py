@@ -75,11 +75,65 @@ ALLOW_RULES = [
     # Hospitality
     {"keywords": ["hospitality", "barista", "waiter", "waitress",
                   "bar staff", "hotel", "restaurant", "kitchen",
-                  "chef", "cook", "catering", "café", "cafe", "deli"],  "score": 15, "field": "title"},
+                  "chef", "cook", "catering", "café", "cafe", "deli counter"],  "score": 15, "field": "title"},
 
-    # Security (specific, higher priority)
-    {"keywords": ["security guard", "door supervisor", "concierge"],  "score": 35, "field": "title"},
-    {"keywords": ["security"],                                  "score": 15, "field": "title"},
+    # Security (comprehensive expansion - primary focus area)
+    
+    # Core security roles (highest priority)
+    {"keywords": ["security guard", "security officer", "armed security", "unarmed security",
+                  "door supervisor", "bouncer", "protective services", "protection officer",
+                  "security operative"],  "score": 45, "field": "title"},
+    
+    # DUBLIN/IRELAND MAJOR SECURITY AGENCIES (Top Priority)
+    # International companies
+    {"keywords": ["g4s", "allied universal", "securitas", "brinks", "loomis",
+                  # Irish companies and contractors
+                  "horizon security", "eclipse security", "shield security", "guardian security",
+                  "precision security", "professional security services", "cis security",
+                  "sector security", "centurion security", "capital security", "armoured", "armored"],  "score": 45, "field": "title"},
+    
+    # IRISH SECURITY SERVICES & NATIONAL CONTRACTORS
+    {"keywords": ["irish security services", "iss security", "dublin security", "ireland security",
+                  "loomis ireland", "loomis", "cash in transit", "cash management", "secure transport",
+                  "cash handling", "cash handler", "money handling", "bank security", "financial security",
+                  "armoured vehicle driver", "armored vehicle driver"],  "score": 42, "field": "title"},
+    
+    # RETAIL & MAJOR RETAILERS SECURITY
+    {"keywords": ["dunnes security", "tesco security", "supervalu security", "retail security",
+                  "loss prevention", "asset protection", "stock protection", "shrinkage prevention",
+                  "warehouse security", "store detective"],  "score": 40, "field": "title"},
+    
+    # TRANSPORTATION & LOGISTICS SECURITY
+    {"keywords": ["airport security", "aviation security", "transport security", "cargo security",
+                  "secure logistics", "armoured vehicle", "armored vehicle", "security driver"],  "score": 40, "field": "title"},
+    
+    # SPECIALIZED SECURITY ROLES
+    {"keywords": ["event security", "venue security", "nightclub security", "bar security",
+                  "concert security", "festival security", "vip security", "close protection",
+                  "bodyguard", "executive protection", "personal security", "private security",
+                  "corporate security", "building security", "site security", "museum security",
+                  "gallery security"],  "score": 38, "field": "title"},
+    
+    # SECURITY OPERATIONS & MONITORING
+    {"keywords": ["surveillance", "cctv", "cctv operator", "security monitoring", "control room",
+                  "security patrol", "incident response", "alarm", "access control", "security checkpoint",
+                  "security monitoring centre", "monitoring centre", "night watch"],  "score": 35, "field": "title"},
+    
+    # RISK & LOSS PREVENTION SPECIALISTS
+    {"keywords": ["loss prevention officer", "risk assessment", "security risk", "theft prevention",
+                  "fraud prevention", "compliance officer", "compliance security", "audit security"],  "score": 32, "field": "title"},
+    
+    # SHIFT-BASED & NIGHT WORK
+    {"keywords": ["night security", "security night shift", "evening security", "graveyard security",
+                  "24/7 security", "round the clock", "7 days a week"],  "score": 30, "field": "title"},
+    
+    # CERTIFICATIONS & QUALIFICATIONS (in description)
+    {"keywords": ["security clearance", "security patrol", "armed response", "security training",
+                  "sro certified", "security certification", "licensed security", "unarmed combat",
+                  "health and safety", "first aid", "security industry authority"],  "score": 25, "field": "description"},
+    
+    # General security (catch-all with reasonable score)
+    {"keywords": ["security", "protection", "protective"],           "score": 18, "field": "title"},
 
     # Cleaning
     {"keywords": ["cleaner", "cleaning", "housekeeper",
