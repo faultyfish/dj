@@ -6,6 +6,7 @@ from scraper import scrape
 from filters import filter_jobs, deduplicate, filter_dublin_only
 from database import get_engine, get_session_factory, init_db, migrate_db
 from store import upsert_jobs, count_jobs, cleanup_old_jobs
+from config import validate_config
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,6 +18,13 @@ logger = logging.getLogger("job_radar")
 
 def main():
     location = sys.argv[1] if len(sys.argv) > 1 else None
+
+    # Validate configuration
+    try:
+        validate_config()
+    except ValueError as e:
+        logger.error("Configuration validation failed: %s", e)
+        sys.exit(1)
 
     # 1. Scrape
     raw_jobs = scrape(location)

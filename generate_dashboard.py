@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from database import get_engine, get_session_factory, init_db, migrate_db
 from store import fetch_all_jobs
+from config import DUBLIN_KEYWORDS, validate_config
 
 OUTPUT_PATH = Path(__file__).parent / "docs" / "index.html"
 
@@ -17,23 +18,49 @@ OUTPUT_PATH = Path(__file__).parent / "docs" / "index.html"
 def is_dublin(location: str) -> bool:
     """Check if job location is in Dublin."""
     loc = location.lower()
-    dublin_keywords = ["dublin", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9",
-                       "d10", "d11", "d12", "d13", "d14", "d15", "d16", "d17", "d18",
-                       "d20", "d24"]
-    return any(keyword in loc for keyword in dublin_keywords)
+    return any(keyword in loc for keyword in DUBLIN_KEYWORDS)
 
 
 def categorise(title: str) -> str:
     t = title.lower()
-    if any(k in t for k in ["retail", "shop assistant", "cashier", "sales assistant", "store"]):
+    
+    # Academic/Research roles
+    if any(k in t for k in ["research assistant", "tutor", "lecturer", "professor", "academic"]):
+        return "academic"
+    
+    # Admin/Office roles (check before generic keywords to avoid overlap)
+    if any(k in t for k in ["receptionist", "secretary", "admin", "administrative", "office assistant", "office manager", "data entry"]):
+        return "admin"
+    
+    # Customer support/care roles
+    if any(k in t for k in ["customer service", "call centre", "call center", "support", "helpdesk", "help desk", 
+                             "carer", "care assistant", "healthcare assistant", "childcare"]):
+        return "support"
+    
+    # Retail roles
+    if any(k in t for k in ["retail", "shop assistant", "cashier", "sales assistant", "store", "checkout"]):
         return "retail"
+    
+    # Hospitality roles
     if any(k in t for k in ["barista", "bar ", "waiter", "waitress", "chef", "cook",
-                              "hotel", "restaurant", "hospitality", "cafe", "café"]):
+                             "hotel", "restaurant", "hospitality", "cafe", "café", "deli", "kitchen"]):
         return "hospitality"
-    if any(k in t for k in ["warehouse", "picker", "packer", "forklift", "logistics", "stock"]):
+    
+    # Warehouse/Logistics/Driver roles
+    if any(k in t for k in ["warehouse", "picker", "packer", "forklift", "logistics", "stock", 
+                             "delivery driver", "courier", "driver"]):
         return "warehouse"
-    if any(k in t for k in ["security", "guard", "door supervisor", "concierge"]):
+    
+    # Security roles (check before generic 'security' keyword)
+    if any(k in t for k in ["security guard", "door supervisor", "concierge"]):
         return "security"
+    if "security" in t:
+        return "security"
+    
+    # Cleaning roles
+    if any(k in t for k in ["cleaner", "cleaning", "housekeeper", "janitorial"]):
+        return "other"  # could create "cleaning" category or leave in "other"
+    
     return "other"
 
 
@@ -374,6 +401,13 @@ renderTable();
 
 
 def main():
+    # Validate configuration
+    try:
+        validate_config()
+    except ValueError as e:
+        print(f"Configuration validation failed: {e}")
+        sys.exit(1)
+
     engine = get_engine()
     init_db(engine)
     migrate_db(engine)

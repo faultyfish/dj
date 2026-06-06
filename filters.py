@@ -5,7 +5,7 @@ import logging
 from typing import List, Tuple
 
 from models import Job
-from config import ALLOW_RULES, BLOCK_RULES, PASS_THRESHOLD
+from config import ALLOW_RULES, BLOCK_RULES, PASS_THRESHOLD, DUBLIN_KEYWORDS
 
 logger = logging.getLogger(__name__)
 
@@ -118,16 +118,12 @@ def filter_dublin_only(jobs: List[Job]) -> List[Job]:
     Keep only jobs located in Dublin (case-insensitive).
     Removes jobs from neighbouring counties or elsewhere.
     """
-    dublin_keywords = ["dublin", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9",
-                       "d10", "d11", "d12", "d13", "d14", "d15", "d16", "d17", "d18",
-                       "d20", "d24"]
-
     dublin = []
     non_dublin = []
 
     for job in jobs:
         loc = job.location.lower()
-        if any(keyword in loc for keyword in dublin_keywords):
+        if any(keyword in loc for keyword in DUBLIN_KEYWORDS):
             dublin.append(job)
         else:
             non_dublin.append(job)
